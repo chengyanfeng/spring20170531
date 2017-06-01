@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+<!--1.配置beans,手动加入IOC容器-->
+<bean id="MyCar" class="spring.cheng.beans.Car">
+    <property name="name" value="aodi"></property>
+
+</bean>
+<!--2.利用context组件扫描beans,自动加入IOC容器中-->
+<context:component-scan base-package="spring.*"></context:component-scan>
+<!--3.利用context组件扫描外部文件，自动加入IOC容器中 -->
+<context:property-placeholder location="classpath:db.properties"></context:property-placeholder>
+<!--4.配置数据源，利用扫描的外部文件，配置beans,datasource,配置数据源 -->
+<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+    <property name="driverClass" value="${driverClass}"></property>
+    <property name="jdbcUrl" value="${url}"></property>
+    <property name="user" value="${user}"></property>
+    <property name="password" value="${password}"></property>
+</bean>
+<!--5.配置jdbcTemptale,加入IOC容器，操纵数据库 -->
+<bean id="jdbcTempalle" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="dataSource"></property>
+</bean>
+<!--6.配置tranmager事务管理器 -->
+<bean id="tranmager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource"></property>
+
+</bean>
+<!--7.开启事务管理注解，利用tx:标签 -->
+<tx:annotation-driven transaction-manager="tranmager"></tx:annotation-driven>
+</beans>
